@@ -8,6 +8,7 @@ const helper = require('think-helper');
  */
 const getPageUrl = (options, ctx) => {
   let pageUrl = options.url;
+  const pathname = options.pathname;
   if (!pageUrl) {
     let prefix = (options.prefix || '') + '?';
     const querys = [];
@@ -23,7 +24,7 @@ const getPageUrl = (options, ctx) => {
     }
     pageUrl = prefix + 'page=__PAGE__';
   }
-  return pageUrl;
+  return `${pathname}${pageUrl}`;
 };
 
 /**
@@ -59,7 +60,7 @@ const getPageIndex = (pagerData, options) => {
 };
 
 /**
- * thinkjs pagenation 
+ * thinkjs pagenation
  * @param  {Object} pagerData [pagerData by countSelect]
  * @param  {Object} ctx      []
  * @param  {Object} options   []
@@ -72,6 +73,7 @@ module.exports = (pagerData, ctx, options) => {
     desc: false, // show desc
     pageNum: 2,
     url: '',
+    pathname: '',
     class: '',
     text: {
       next: 'Next',
@@ -92,12 +94,16 @@ module.exports = (pagerData, ctx, options) => {
     html += `<li class="disabled"><span>${total}</span></li>`;
   }
   if (currentPage > 1) {
-    html += `<li class="prev"><a href="${pageUrl.replace('__PAGE__', currentPage - 1)}">${options.text.prev}</a></li>`;
+    if (+currentPage !== 2) {
+      html += `<li class="prev"><a href="${pageUrl.replace('__PAGE__', currentPage - 1)}">${options.text.prev}</a></li>`;
+    } else {
+      html += `<li class="prev"><a href="${options.pathname}">${options.text.prev}</a></li>`;
+    }
   }
 
   const pageIndex = getPageIndex(pagerData, options);
   if (pageIndex[0] > 1) {
-    html += `<li><a href="${pageUrl.replace('__PAGE__', 1)}">1</a></li>`;
+    html += `<li><a href="${options.pathname}">1</a></li>`;
   }
   if (pageIndex[0] > 2) {
     html += `<li class="disabled"><span>...</span></li>`;
@@ -105,10 +111,11 @@ module.exports = (pagerData, ctx, options) => {
 
   for (let i = 0, length = pageIndex.length; i < length; i++) {
     const p = pageIndex[i];
+    const isFirst = +p === 1;
     if (p === currentPage) {
-      html += `<li class="active"><a href="${pageUrl.replace('__PAGE__', p)}">${p}</a></li>`;
+      html += `<li class="active"><a href="${isFirst ? options.pathname : pageUrl.replace('__PAGE__', p)}">${p}</a></li>`;
     } else {
-      html += `<li><a href="${pageUrl.replace('__PAGE__', p)}">${p}</a></li>`;
+      html += `<li><a href="${isFirst ? options.pathname : pageUrl.replace('__PAGE__', p)}">${p}</a></li>`;
     }
   }
   if (pageIndex.length > 1) {

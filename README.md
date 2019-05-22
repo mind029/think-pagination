@@ -1,11 +1,11 @@
-# think-pagination
+## think-pagination-custom
 
 pagination for ThinkJS 3, if you want to use in ThinkJS 2.x, please view [README_v2](./README_v2.md)
 
 ## install
 
 ```sh
-npm install think-pagination
+npm install think-pagination-custom
 ```
 
 ## how to use
@@ -53,6 +53,7 @@ module.exports = class extends think.Controller {
   desc: false, //show description
   pageNum: 2, 
   url: '', //page url, when not set, it will auto generated
+  pathname: '', // replace first url to pathname
   class: '', //pagenation extra class
   text: {
     next: 'Next',
